@@ -18,7 +18,7 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             db.exec(data, (err) => {
                 if (err) {
                     // table created
-                    console.error(err)
+                    // console.error(err)
                 }
                 else {
 
