@@ -31,6 +31,11 @@ router.get('/', (req, res) => {
     })
 })
 
+// test authentication
+router.get('/authtest', authenticateToken, (req, res) => {
+    console.log(req)
+    res.json(req.auth_token)
+})
 // gets a user with a specific id
 router.get('/:id', (req, res) => {
     let query = "select * from user where user_id = ?"
@@ -71,8 +76,8 @@ router.post('/', (req, res) => {
         password: md5(req.body.password)
     }
 
-    let query = 'INSERT INTO user (username, email, password) VALUES (?,?,?)'
-    let params = [data.username, data.email, data.password]
+    let query = 'INSERT INTO user (username, email, password, is_website_admin, internet_points) VALUES (?,?,?,?,?)'
+    let params = [data.username, data.email, data.password, false, 0]
     db.run(query, params, function(err, result) {
         if (err) {
             res.status(400).json({"error": err.message})
@@ -114,14 +119,13 @@ router.post('/login', (req, res) => {
             res.status(400).json({"error": "incorrect password"})
             return
         }
-        const token = generateAccessToken({"username": row.user_id})
-        res.json(token)
+        const token = generateAccessToken({"username": row.email})
+        res.json({"access_token": token})
     })
 })
 
-// update user
-router.patch('/', authenticateToken, (req, res) => {
-    // TODO
+router.patch('/update', authenticateToken, (req, res) => {
+
 })
 
 module.exports = router

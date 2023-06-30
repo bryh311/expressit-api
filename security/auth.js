@@ -19,14 +19,15 @@ function authenticateToken(req, res, next) {
         return res.sendStatus(401)
     }
 
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, auth_token) => {
         console.log(err)
 
         if (err) {
             return res.sendStatus(403)
         }
 
-        req.user = user
+        req.auth_token = auth_token
+        console.log(auth_token)
 
         next()
     })
