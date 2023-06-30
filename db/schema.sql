@@ -29,7 +29,10 @@ CREATE TABLE subscription (
 );
 
 CREATE TABLE subgroup (
-    group_id INTEGER PRIMARY KEY AUTOINCREMENT
+    group_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    member_count INTEGER NOT NULL,
+    CONSTRAINT name_unique UNIQUE (name)
 );
 
 CREATE TABLE comment (
