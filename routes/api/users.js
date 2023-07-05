@@ -124,8 +124,68 @@ router.post('/login', (req, res) => {
     })
 })
 
-router.patch('/update', authenticateToken, (req, res) => {
+router.patch('/update/:id', authenticateToken, (req, res) => {
+    let data = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password ? md5(req.body.password) : null
+    }
+    const auth_email = req.auth_token.username
+    const select_query = `SELECT * FROM user WHERE id = ?`
+    db.get(select_query, [req.params.id], (err, row) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        if (row.email != auth_email) {
+            res.status(401).json({"error": "access denied"})
+            return
+        }
 
+        const update_query = `UPDATE user SET
+            username = COALESCE(?,username),
+            email = COALESCE(?,email),
+            password = COALESCE(?,password)
+            WHERE id = ?`
+        
+        db.run(update_query, [data.username, data.email, data.password], function(err, result) {
+            if (err) {
+                res.status(400).json({"error": err.message})
+                return
+            }
+            let return_json = {
+                message: "success",
+                data: data,
+                changes: this.changes
+            }
+            if (this.changes.email != null) {
+                return_json.auth_token = generateAccessToken(changes.email)
+            }
+            res.json(return_json)
+        })
+    })
+})
+
+router.delete('/delete/:id', authenticateToken, (req, res) => {
+    const auth_email = req.auth_token.username
+    const select_query = `SELECT * FROM USER WHERE id = ?`
+    db.get(select_query, [req.params.id], (err, row) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        if (row.email != auth_email) {
+            res.status(401).json({"error": "access denied"})
+            return
+        }
+        db.run(`DELETE FROM user WHERE id = ?`, [req.params.id], function(err, result) {
+            if (err) {
+                res.status(400).json({"error": res.message})
+                return
+            }
+            res.json({"message": "deleted", "changes": this.changes})
+        })
+    })
 })
 
 module.exports = router

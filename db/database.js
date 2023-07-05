@@ -31,7 +31,6 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
                     }
                 })
             })
-            // console.log('wtf')
             db.get(`select * from user where email = ?`, ["admin@expressit.com"], (err, row) => {
                 // console.log(`row ${row}`)
                 if (row == undefined) {
