@@ -33,8 +33,13 @@ router.get('/', (req, res) => {
 
 // test authentication
 router.get('/authtest', authenticateToken, (req, res) => {
-    console.log(req)
+    // console.log(req)
     res.json(req.auth_token)
+    let query = `select user_id from user where email = ?`
+    db.get(query, [req.auth_token.username], (err, oo) => {
+        // console.log(err.message)
+        console.log(oo)
+    })
 })
 // gets a user with a specific id
 router.get('/:id', (req, res) => {
