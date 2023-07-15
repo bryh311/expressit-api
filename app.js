@@ -4,11 +4,13 @@ const app = express()
 const db = require('./db/database.js')
 const users = require('./routes/api/users.js')
 const subgroups = require('./routes/api/subgroups')
+const posts = require('./routes/api/posts.js')
 
 const port = process.env.port || 8080
 
 app.use('/api/users/', users)
 app.use('/api/subgroups/', subgroups)
+app.use('/api/posts/', posts)
 
 app.get('/', (req, res) => res.send("Hello World!"))
 
