@@ -9,26 +9,73 @@ router.use(bodyParser.urlencoded({extended: false}))
 router.use(bodyParser.json())
 
 
-router.get('/group/:name/:id', (req, res) => {
-
+router.get('/post/:id', (req, res) => {
+    let query = "SELECT * FROM subgroup WHERE id = ?"
+    db.get(query, req.params.id, (err, row) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        res.json({
+            "message":"success",
+            "data": row
+        })
+    })
 })
 
 router.get('/group/:name/:page', (req, res) => {
-    
+    let group_query = 
+    `SELECT * FROM post WHERE group_id = (SELECT group_id FROM subgroup WHERE name = ?) LIMIT ?, 10`
+    let params = [req.params.name, page * 10]
+    db.all(group_query, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        res.json({
+            "message": "success",
+            "data": rows
+        })
+    })
 })
 
 /**
  * gives a list of posts from subscription
  */
 router.get('/home/:page', authenticateToken, (req, res) => {
-
+    let page = parseInt(req.params.page)
+    let homepage_query =
+    `SELECT * FROM post WHERE group_id =
+    (SELECT group_id FROM subscription WHERE user_id = (SELECT user_id FROM user WHERE email = ?)) LIMIT  ?, 10`
+    let params = [req.auth_token.username, page * 10]
+    db.all(homepage_query, params, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        res.json({
+            "message": "success",
+            "data": rows
+        })
+    })
 })
 
 /**
  * Posts for users who are not logged in
  */
-router.get('/', (req, res) => {
-
+router.get('/:page/', (req, res) => {
+    let page = parseInt(req.params.page)
+    let homepage_query = `SELECT * FROM post LIMIT ?, 10`
+    db.all(homepage_query, page * 10, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        res.json({
+            "message": "success",
+            "data": rows
+        })
+    })
 })
 
 router.post('/group/:name/', authenticateToken, (req,res) => {
