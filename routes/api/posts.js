@@ -32,7 +32,6 @@ router.get('/', (req, res) => {
 })
 
 router.post('/group/:name/', authenticateToken, (req,res) => {
-    console.log('fuckfuckfuck')
     let insert_query = `INSERT INTO post (creator_id, group_id, title, content, votes, date) 
     VALUES ((SELECT user_id FROM user WHERE email = ?), (SELECT group_id FROM subgroup WHERE name = ?), ?, ?, 0, datetime('now'))`
     let errors = []
