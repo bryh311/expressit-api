@@ -15,6 +15,7 @@ CREATE TABLE post (
     title TEXT NOT NULL,
     content TEXT,
     votes INTEGER NOT NULL,
+    date TEXT NOT NULL,
     FOREIGN KEY(creator_id) REFERENCES user(user_id),
     FOREIGN KEY(group_id) REFERENCES subgroup(group_id)
 );
