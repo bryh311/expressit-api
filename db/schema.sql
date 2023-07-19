@@ -42,6 +42,7 @@ CREATE TABLE comment (
     post_id INTEGER NOT NULL,
     content TEXT NOT NULL,
     votes INTEGER NOT NULL,
+    date TEXT NOT NULL,
     FOREIGN KEY(creator_id) REFERENCES user(user_id),
     FOREIGN KEY(post_id) REFERENCES post(post_id)
 );
