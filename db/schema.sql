@@ -16,6 +16,7 @@ CREATE TABLE post (
     content TEXT,
     votes INTEGER NOT NULL,
     date TEXT NOT NULL,
+    edited BOOLEAN NOT NULL,
     FOREIGN KEY(creator_id) REFERENCES user(user_id),
     FOREIGN KEY(group_id) REFERENCES subgroup(group_id)
 );
@@ -43,6 +44,7 @@ CREATE TABLE comment (
     content TEXT NOT NULL,
     votes INTEGER NOT NULL,
     date TEXT NOT NULL,
+    edited BOOLEAN NOT NULL,
     FOREIGN KEY(creator_id) REFERENCES user(user_id),
     FOREIGN KEY(post_id) REFERENCES post(post_id)
 );

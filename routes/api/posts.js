@@ -79,8 +79,8 @@ router.get('/:page/', (req, res) => {
 })
 
 router.post('/group/:name/', authenticateToken, (req,res) => {
-    let insert_query = `INSERT INTO post (creator_id, group_id, title, content, votes, date) 
-    VALUES ((SELECT user_id FROM user WHERE email = ?), (SELECT group_id FROM subgroup WHERE name = ?), ?, ?, 0, datetime('now'))`
+    let insert_query = `INSERT INTO post (creator_id, group_id, title, content, votes, date, edited) 
+    VALUES ((SELECT user_id FROM user WHERE email = ?), (SELECT group_id FROM subgroup WHERE name = ?), ?, ?, 0, datetime('now'), false)`
     let errors = []
     if (!req.body.title) {
         errors.push("no title!")
@@ -100,7 +100,8 @@ router.post('/group/:name/', authenticateToken, (req,res) => {
         title: req.body.title,
         content: req.body.title,
         votes: 0,
-        date: Date.now
+        date: Date.now,
+        edited: false
     }
 
     let params = [data.creator, data.group, data.title, data.content]
@@ -143,6 +144,50 @@ router.post('/:id/downvote', authenticateToken, (req, res) => {
         })
     })
 })
+
+router.patch('/update/:id', authenticateToken, (req, res) => {
+    let data = {
+        title: req.body.title,
+        content: req.body.content,
+    }
+    let edit_query = `UPDATE post SET
+        title = COALESCE(?, title),
+        content = COALESCE(?, content),
+        edited = true
+        WHERE post_id = ? AND creator_id = (SELECT user_id FROM user WHERE email = ?)`
+    
+    db.run(edit_query, [req.params.id, req.auth_token.username], function(err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        let return_json = {
+            message: "success",
+            data: data,
+            changes: this.changes
+        }
+        res.json(return_json)
+    })
+})
+
+router.delete('/delete/:id', authenticateToken, (req, res) => {
+    let delete_query = "DELETE FROM post WHERE post_id = ?"
+    db.run(delete_query, req.params.id, function(err, result) {
+        if (err) {
+            res.status(400).json({"error": res.message})
+            return
+        }
+        let comment_delete_query = "DELETE FROM comment WHERE comment_id = ?"
+        db.run(comment_delete_query, req.params.id, function(err, result) {
+            if (err) {
+                res.status(400).json({"error": res.message})
+                return
+            }
+            res.json({"message": "deleted", "changes": this.changes})
+        })
+    })
+})
+
 
 
 module.exports = router

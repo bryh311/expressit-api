@@ -75,4 +75,38 @@ router.post('post/:post/', authenticateToken, (req, res) => {
     })
 })
 
+router.patch('/update/:id', authenticateToken, (req, res) => {
+    let data = {
+        content: req.body.content,
+    }
+    let edit_query = `UPDATE comment SET
+        content = COALESCE(?, content),
+        edited = true
+        WHERE comment_id = ? AND creator_id = (SELECT user_id FROM user WHERE email = ?)`
+    
+    db.run(edit_query, [req.params.id, req.auth_token.username], function(err, result) {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        let return_json = {
+            message: "success",
+            data: data,
+            changes: this.changes
+        }
+        res.json(return_json)
+    })
+})
+
+router.delete('/delete/:id', authenticateToken, (req, res) => {
+    let delete_query = "DELETE FROM comment WHERE comment_id = ?"
+    db.run(delete_query, req.params.id, function(err, result) {
+        if (err) {
+            res.status(400).json({"error": res.message})
+            return
+        }
+        res.json({"message": "deleted", "changes": this.changes})
+    })
+})
+
 module.exports = router
