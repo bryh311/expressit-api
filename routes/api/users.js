@@ -120,6 +120,10 @@ router.post('/login', (req, res) => {
             res.status(400).json({"error": err.message})
             return
         }
+        if (row == undefined) {
+            res.status(400).json({"error": "user does not exist!"})
+            return
+        }
         if (row.password != data.password) {
             res.status(400).json({"error": "incorrect password"})
             return
