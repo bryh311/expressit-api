@@ -10,7 +10,7 @@ router.use(bodyParser.json())
 
 // list of comments from a given post
 router.get('/post/:post/', (req, res) => {
-    let comments_query = `SELECT * FROM comment WHERE post_id = (SELECT post_id FROM post WHERE name = ?)`
+    let comments_query = `SELECT * FROM comment WHERE post_id = ?`
     db.all(comments_query, req.params.post, (err, rows) => {
         if (err) {
             res.status(400).json({"error": err.message})

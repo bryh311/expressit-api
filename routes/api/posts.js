@@ -10,7 +10,7 @@ router.use(bodyParser.json())
 
 
 router.get('/post/:id', (req, res) => {
-    let query = "SELECT * FROM subgroup WHERE id = ?"
+    let query = "SELECT * FROM post WHERE post_id = ?"
     db.get(query, req.params.id, (err, row) => {
         if (err) {
             res.status(400).json({"error": err.message})
