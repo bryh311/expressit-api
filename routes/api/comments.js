@@ -38,7 +38,7 @@ router.get('/:id', (req, res) => {
     })
 })
 
-router.post('post/:post/', authenticateToken, (req, res) => {
+router.post('/post/:post/', authenticateToken, (req, res) => {
     let errors = []
     if (!req.body.content) {
         errors.push("lack of message content!")
@@ -54,13 +54,14 @@ router.post('post/:post/', authenticateToken, (req, res) => {
         post: req.params.post,
         content: req.body.content,
         votes: 0,
-        date: Date.now
+        date: Date.now,
+        edited: false
     }
 
-    let create_query = `INSERT INTO comment (creator_id, post_id, content, votes, date) VALUES 
-    ((SELECT user_id FROM user WHERE email =?), ?, ?, ?, ?)`
+    let create_query = `INSERT INTO comment (creator_id, post_id, content, votes, date, edited) VALUES 
+    ((SELECT user_id FROM user WHERE email =?), ?, ?, ?, ?, ?)`
 
-    let params = [data.creator, data.post, data.content, data.votes, data.date]
+    let params = [data.creator, data.post, data.content, data.votes, data.date, data.edited]
 
     db.run(create_query, params, function(err, result) {
         if (err) {

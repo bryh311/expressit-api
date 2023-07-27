@@ -43,7 +43,7 @@ router.get('/authtest', authenticateToken, (req, res) => {
 })
 // gets a user with a specific id
 router.get('/:id', (req, res) => {
-    let query = "select * from user where user_id = ?"
+    let query = "SELECT * FROM user WHERE user_id = ?"
     let params = [req.params.id]
     db.get(query, params, (err, row) => {
         if (err) {
