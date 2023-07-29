@@ -79,8 +79,8 @@ router.get('/:page/', (req, res) => {
 })
 
 router.post('/group/:name/', authenticateToken, (req,res) => {
-    let insert_query = `INSERT INTO post (creator_id, group_id, title, content, votes, date, edited) 
-    VALUES ((SELECT user_id FROM user WHERE email = ?), (SELECT group_id FROM subgroup WHERE name = ?), ?, ?, 0, datetime('now'), false)`
+    let insert_query = `INSERT INTO post (creator_id, group_id, title, content, date, edited) 
+    VALUES ((SELECT user_id FROM user WHERE email = ?), (SELECT group_id FROM subgroup WHERE name = ?), ?, ?, datetime('now'), false)`
     let errors = []
     if (!req.body.title) {
         errors.push("no title!")
@@ -99,7 +99,6 @@ router.post('/group/:name/', authenticateToken, (req,res) => {
         group: req.params.name,
         title: req.body.title,
         content: req.body.title,
-        votes: 0,
         date: Date.now,
         edited: false
     }
@@ -119,31 +118,7 @@ router.post('/group/:name/', authenticateToken, (req,res) => {
     })
 })
 
-router.post('/:id/upvote', authenticateToken, (req, res) => {
-    let upvote_query = `UPDATE post SET votes = votes + 1 WHERE id = ?`
-    db.run(upvote_query, req.params.id, (result, err) => {
-        if (err) {
-            res.status(400).json({"error": err.message})
-            return
-        }
-        res.json({
-            "message": "success"
-        })
-    })
-})
 
-router.post('/:id/downvote', authenticateToken, (req, res) => {
-    let downvote_query = `UPDATE post SET votes = votes - 1 WHERE id = ?`
-    db.run(downvote_query, req.params.id, (result, err) => {
-        if (err) {
-            res.status(400).json({"error": err.message})
-            return
-        }
-        res.json({
-            "message": "success"
-        })
-    })
-})
 
 router.patch('/update/:id', authenticateToken, (req, res) => {
     let data = {

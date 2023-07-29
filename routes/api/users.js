@@ -81,8 +81,8 @@ router.post('/', (req, res) => {
         password: md5(req.body.password)
     }
 
-    let query = 'INSERT INTO user (username, email, password, is_website_admin, internet_points) VALUES (?,?,?,?,?)'
-    let params = [data.username, data.email, data.password, false, 0]
+    let query = 'INSERT INTO user (username, email, password, is_website_admin) VALUES (?,?,?,?)'
+    let params = [data.username, data.email, data.password, false]
     db.run(query, params, function(err, result) {
         if (err) {
             res.status(400).json({"error": err.message})

@@ -7,6 +7,7 @@ const users = require('./routes/api/users.js')
 const subgroups = require('./routes/api/subgroups.js')
 const posts = require('./routes/api/posts.js')
 const comments = require('./routes/api/comments.js')
+const votes = require('./routes/api/votes.js')
 
 const port = process.env.port || 8080
 
@@ -17,6 +18,7 @@ app.use('/api/users/', users)
 app.use('/api/subgroups/', subgroups)
 app.use('/api/posts/', posts)
 app.use('/api/comments/', comments)
+app.use('/api/votes', votes)
 
 app.get('/', (req, res) => res.send("Hello World!"))
 
