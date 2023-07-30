@@ -58,7 +58,7 @@ router.post('/post/:post/', authenticateToken, (req, res) => {
     }
 
     let create_query = `INSERT INTO comment (creator_id, post_id, content, date, edited) VALUES 
-    ((SELECT user_id FROM user WHERE email =?), ?, ?, ?, ?, ?)`
+    ((SELECT user_id FROM user WHERE email =?), ?, ?, ?, ?)`
 
     let params = [data.creator, data.post, data.content, data.date, data.edited]
 

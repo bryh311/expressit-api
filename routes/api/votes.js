@@ -17,11 +17,11 @@ router.get('/post/:post_id', (req, res) => {
             res.status(400).json({"error": err.message})
             return
         }
-        if (row == undefined) {
-            res.json({"SUM(value)": 0})
+        if (row["SUM(value)"] == undefined) {
+            res.json({count: 0})
             return
         }
-        res.json(row)
+        res.json({count: row["SUM(value)"]})
     })
 })
 
@@ -33,7 +33,7 @@ router.get('/comment/:comment_id', (req, res) => {
             res.status(400).json({"error": err.message})
             return
         }
-        if (row == undefined) {
+        if (row['SUM(value)'] == undefined) {
             res.json({count: 0})
             return
         }
@@ -50,7 +50,7 @@ router.get('/user/:user_id', (req, res) => {
             res.status(400).json({"error": err.message})
             return
         }
-        if (row1 == undefined) {
+        if (row1['SUM(value)'] == undefined) {
             row1 = {"SUM(value)": 0}
         }
         db.get(query2, req.params.user_id, (err, row2) => {
@@ -58,7 +58,7 @@ router.get('/user/:user_id', (req, res) => {
                 res.status(400).json({"error": err.message})
                 return
             }
-            if (row2 == undefined) {
+            if (row2["SUM(value)"] == undefined) {
                 row2 = {"SUM(value)": 0}
             }
             res.json({count: row1["SUM(value)"] + row2["SUM(value)"]})
