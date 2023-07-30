@@ -34,10 +34,10 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             db.get(`select * from user where email = ?`, ["admin@expressit.com"], (err, row) => {
                 // console.log(`row ${row}`)
                 if (row == undefined) {
-                    let params = ['admin', 'admin@expressit.com', md5('12345'), true, 0]
+                    let params = ['admin', 'admin@expressit.com', md5('12345'), true]
                     db.run(`INSERT INTO user 
-                        (username, email, password, is_website_admin, internet_points)
-                        VALUES (?, ?, ?, ?, ?)`, params)
+                        (username, email, password, is_website_admin)
+                        VALUES (?, ?, ?, ?)`, params)
                 }
             })
         }
