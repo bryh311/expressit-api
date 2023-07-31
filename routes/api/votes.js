@@ -41,31 +41,6 @@ router.get('/comment/:comment_id', (req, res) => {
     })
 })
 
-// internet points for a user
-router.get('/user/:user_id', (req, res) => {
-    let query1 = `SELECT SUM(value) FROM post_vote WHERE user_id = ?`
-    let query2 = `SELECT SUM(value) FROM comment_vote WHERE user_id = ?`
-    db.get(query1, req.params.user_id, (err, row1) => {
-        if (err) {
-            res.status(400).json({"error": err.message})
-            return
-        }
-        if (row1['SUM(value)'] == undefined) {
-            row1 = {"SUM(value)": 0}
-        }
-        db.get(query2, req.params.user_id, (err, row2) => {
-            if (err) {
-                res.status(400).json({"error": err.message})
-                return
-            }
-            if (row2["SUM(value)"] == undefined) {
-                row2 = {"SUM(value)": 0}
-            }
-            res.json({count: row1["SUM(value)"] + row2["SUM(value)"]})
-        })
-    })
-})
-
 // check if exists from a user and gives value
 router.get('/user/post/:post_id', authenticateToken, (req, res) => {
     let query = `SELECT * FROM post_vote WHERE user_id = (SELECT user_id FROM user WHERE email = ?) AND post_id = ?`
@@ -98,6 +73,31 @@ router.get('/user/comment/:comment_id', authenticateToken, (req, res) => {
             return
         }
         res.json({count: row.value})
+    })
+})
+
+// internet points for a user
+router.get('/user/:user_id', (req, res) => {
+    let query1 = `SELECT SUM(value) FROM post_vote WHERE user_id = ?`
+    let query2 = `SELECT SUM(value) FROM comment_vote WHERE user_id = ?`
+    db.get(query1, req.params.user_id, (err, row1) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        if (row1['SUM(value)'] == undefined) {
+            row1 = {"SUM(value)": 0}
+        }
+        db.get(query2, req.params.user_id, (err, row2) => {
+            if (err) {
+                res.status(400).json({"error": err.message})
+                return
+            }
+            if (row2["SUM(value)"] == undefined) {
+                row2 = {"SUM(value)": 0}
+            }
+            res.json({count: row1["SUM(value)"] + row2["SUM(value)"]})
+        })
     })
 })
 
