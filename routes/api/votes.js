@@ -66,6 +66,41 @@ router.get('/user/:user_id', (req, res) => {
     })
 })
 
+// check if exists from a user and gives value
+router.get('/user/post/:post_id', authenticateToken, (req, res) => {
+    let query = `SELECT * FROM post_vote WHERE user_id = (SELECT user_id FROM user WHERE email = ?) AND post_id = ?`
+    let params = [req.auth_token.username, req.params.post_id]
+    db.get(query, params, (err, row) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        if (row == undefined) {
+            res.json({count: 0})
+            return
+        }
+        res.json({count: row.value})
+        
+    })
+})
+
+// same as above but for comments
+router.get('/user/comment/:comment_id', authenticateToken, (req, res) => {
+    let query = `SELECT * FROM comment_vote WHERE user_id = (SELECT user_id FROM user WHERE email = ?) AND comment_id = ?`
+    let params = [req.auth_token.username, req.params.comment_id]
+    db.get(query, params, (err, row) => {
+        if (err) {
+            res.status(400).json({error: err.message})
+            return
+        }
+        if (row == undefined) {
+            res.json({count: 0})
+            return
+        }
+        res.json({count: row.value})
+    })
+})
+
 // update post votes
 router.post('/post/:post_id', authenticateToken, (req, res) => {
     if (!req.body.value) {
