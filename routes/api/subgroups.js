@@ -23,10 +23,10 @@ router.get('/', (req, res) => {
     })
 })
 
-router.get('group/:name', (req, res) => {
+router.get('/group/:name', (req, res) => {
     let query = 'SELECT * FROM subgroup WHERE name = ?'
     let params = [req.params.name]
-    db.get(quert, params, (err, row) => {
+    db.get(query, params, (err, row) => {
         if (err) {
             res.status(400).json({"error": err.message})
             return
@@ -39,7 +39,7 @@ router.get('group/:name', (req, res) => {
 })
 
 router.get('/:id', (req, res) => {
-    let query = 'SELECT * FROM subgroup WHERE id = ?'
+    let query = 'SELECT * FROM subgroup WHERE group_id = ?'
     let params = [req.params.id]
     db.get(query, params, (err, row) => {
         if (err) {
@@ -49,6 +49,26 @@ router.get('/:id', (req, res) => {
         res.json({
             "message": "success",
             "data": row
+        })
+    })
+})
+
+router.post('/search', (req, res) => {
+    console.log(req.body)
+    if (!req.body.query) {
+        res.status(400).json({"error": "no query included!"})
+        return
+    }
+    const search = "%" + req.body.query.trim() + "%"
+    const search_query = `SELECT * FROM subgroup WHERE name LIKE ?`
+    db.all(search_query, search, (err, rows) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        res.json({
+            "message": "success",
+            "data": rows
         })
     })
 })
