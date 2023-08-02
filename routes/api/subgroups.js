@@ -54,7 +54,6 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/search', (req, res) => {
-    console.log(req.body)
     if (!req.body.query) {
         res.status(400).json({"error": "no query included!"})
         return

@@ -26,7 +26,7 @@ router.get('/post/:id', (req, res) => {
 router.get('/group/:name/:page', (req, res) => {
     let group_query = 
     `SELECT * FROM post WHERE group_id = (SELECT group_id FROM subgroup WHERE name = ?) LIMIT ?, 10`
-    let params = [req.params.name, page * 10]
+    let params = [req.params.name, req.params.page * 10]
     db.all(group_query, params, (err, rows) => {
         if (err) {
             res.status(400).json({"error": err.message})
