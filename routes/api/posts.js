@@ -45,8 +45,9 @@ router.get('/group/:name/:page', (req, res) => {
 router.get('/home/:page', authenticateToken, (req, res) => {
     let page = parseInt(req.params.page)
     let homepage_query =
-    `SELECT * FROM post WHERE group_id =
-    (SELECT group_id FROM subscription WHERE user_id = (SELECT user_id FROM user WHERE email = ?)) LIMIT  ?, 10`
+    `SELECT * FROM post WHERE group_id IN 
+    (SELECT group_id FROM subscription WHERE user_id =
+         (SELECT user_id FROM user WHERE email = ? )) LIMIT ?, 10`
     let params = [req.auth_token.username, page * 10]
     db.all(homepage_query, params, (err, rows) => {
         if (err) {

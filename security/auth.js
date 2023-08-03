@@ -27,7 +27,7 @@ function authenticateToken(req, res, next) {
         }
 
         req.auth_token = auth_token
-        console.log(auth_token)
+        // console.log(auth_token)
 
         next()
     })

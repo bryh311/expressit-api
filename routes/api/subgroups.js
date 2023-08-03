@@ -38,6 +38,24 @@ router.get('/group/:name', (req, res) => {
     })
 })
 
+router.get("/issubscribed/:group_name", authenticateToken, (req, res) => {
+    let query = `SELECT * FROM subscription WHERE user_id = (SELECT user_id FROM user WHERE email = ?) 
+    AND group_id = (SELECT group_id FROM subgroup WHERE name = ?)`
+    let params = [req.auth_token.username, req.params.group_name]
+    db.get(query, params, (err, row) => {
+        if (err) {
+            res.status(400).json({"error": err.message})
+            return
+        }
+        console.log(row)
+        if (row === null || row === undefined) {
+            res.json({subscribed: false})
+            return
+        }
+        res.json({subscribed: true})
+    })
+})
+
 router.get('/:id', (req, res) => {
     let query = 'SELECT * FROM subgroup WHERE group_id = ?'
     let params = [req.params.id]
@@ -73,6 +91,7 @@ router.post('/search', (req, res) => {
 })
 
 router.post("/subscribe/:name", authenticateToken, (req, res) => {
+    console.log('subscribed')
     let subscription_query = `INSERT INTO subscription (user_id, group_id, is_moderator) VALUES
         ((SELECT user_id FROM user WHERE email=?),(SELECT group_id FROM subgroup WHERE name=?), ?)`
     let subscription_params = [req.auth_token.username, req.params.name, false]
@@ -83,7 +102,7 @@ router.post("/subscribe/:name", authenticateToken, (req, res) => {
         }
     })
 
-    let add_user_query = `UPDATE subgroup SET user_count = user_count + 1 WHERE name = ?`
+    let add_user_query = `UPDATE subgroup SET member_count = member_count + 1 WHERE name = ?`
     let add_params = [req.params.name]
     db.run(add_user_query, add_params, (err, result) => {
         if (err) {
@@ -98,8 +117,9 @@ router.post("/subscribe/:name", authenticateToken, (req, res) => {
 })
 
 router.post('/unsubscribe/:name', authenticateToken, (req, res) => {
+    console.log('unsubscribed')
     let unsubscription_query = `DELETE FROM subscription WHERE
-        user_id = (SELECT user_id FROM user WHERE email = ?), group_id = (SELECT group_id FROM subgroup WHERE name = ?)`
+        user_id = (SELECT user_id FROM user WHERE email = ?) AND group_id = (SELECT group_id FROM subgroup WHERE name = ?)`
     let unsubscription_params = [req.auth_token.username, req.params.name]
     db.run(unsubscription_query, unsubscription_params, (err, result) => {
         if (err) {
@@ -107,7 +127,7 @@ router.post('/unsubscribe/:name', authenticateToken, (req, res) => {
             return
         }
     })
-    let remove_user_query = `UPDATE subgroup SET user_count = user_count - 1 WHERE name = ?`
+    let remove_user_query = `UPDATE subgroup SET member_count = member_count - 1 WHERE name = ?`
     let remove_params = [req.params.name]
     db.run(remove_user_query, remove_params, (err, result) => {
         if (err) {
